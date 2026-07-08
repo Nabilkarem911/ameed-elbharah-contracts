@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fbff 0%, #e8f2ff 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Print styles for contracts */
+.no-print { display: inline-block; }
+
+@media print {
+  body { background: white !important; }
+  .no-print { display: none !important; }
+  header, nav, aside { display: none !important; }
+  #print-area { width: 210mm; max-width: 100%; }
+}

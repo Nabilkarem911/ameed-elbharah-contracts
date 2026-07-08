@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id        String   @id @default(uuid())
+  name      String
+  applyToken String?  @unique @map("apply_token")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  creditApplications CreditApplication[]
+
+  @@map("companies")
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model CreditApplication {
+  id               String            @id @default(uuid())
+  companyId        String            @map("company_id")
+  companyName      String            @map("company_name")
+  crNumber         String            @unique @map("cr_number")
+  vatNumber        String?           @map("vat_number")
+  nationalAddress  String?           @map("national_address")
+  creditLimit      Decimal?          @map("credit_limit")
+  paymentTerms     Int?              @map("payment_terms")
+  bankName         String?           @map("bank_name")
+  iban             String?
+  signatureImage   String?           @map("signature_image")
+  status           ApplicationStatus @default(PENDING)
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@map("credit_applications")
+}
