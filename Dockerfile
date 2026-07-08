@@ -23,4 +23,4 @@ COPY --from=builder /app/postcss.config.js ./postcss.config.js
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 COPY --from=builder /app/next-env.d.ts ./next-env.d.ts
 EXPOSE 3000
-CMD ["sh", "-c", "npx prisma migrate deploy && npm run start"]
+CMD ["sh", "-c", "until npx prisma migrate deploy; do echo 'Database not ready yet, retrying in 5 seconds...'; sleep 5; done; npm run start"]
