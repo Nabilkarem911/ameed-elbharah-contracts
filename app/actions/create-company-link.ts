@@ -3,8 +3,16 @@
 import { prisma } from '@/lib/prisma';
 import { randomUUID } from 'crypto';
 
-export async function createCompanyLink(formData: FormData) {
-  const name = String(formData.get('companyName') ?? '').trim();
+export async function createCompanyLink(_prevState: any, formData: FormData | Record<string, any>) {
+  let name = '';
+
+  // support both FormData and plain object payloads
+  if (formData && typeof (formData as any).get === 'function') {
+    name = String((formData as FormData).get('companyName') ?? '').trim();
+  } else if (formData && typeof formData === 'object') {
+    name = String((formData as any).companyName ?? '').trim();
+  }
+
   if (!name) return { success: false, message: 'اسم الشركة مطلوب' };
 
   let company = await prisma.company.findFirst({ where: { name } });

@@ -17,6 +17,10 @@ export default function NewLinkPage() {
           <button type="submit" className="rounded bg-brand-navy px-4 py-2 text-white">إنشاء</button>
         </form>
 
+        {state.message && !state.url ? (
+          <p className="mt-3 text-sm text-red-600">{state.message}</p>
+        ) : null}
+
         {state.url ? (
           <div className="mt-4">
             <p className="text-sm">الرابط:</p>
