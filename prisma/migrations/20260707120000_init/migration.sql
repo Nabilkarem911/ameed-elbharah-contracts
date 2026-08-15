@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "ApplicationStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
+
 -- CreateTable
 CREATE TABLE "companies" (
     "id" TEXT NOT NULL,
