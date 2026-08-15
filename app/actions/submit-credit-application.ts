@@ -5,8 +5,8 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 
 const formSchema = z.object({
-  companyId: z.string().optional(),
-  token: z.string().optional(),
+  companyId: z.string().trim().min(1, 'معرّف الشركة مفقود'),
+  token: z.string().trim().min(1, 'رمز التحقق مفقود'),
   companyName: z.string().trim().min(1, 'اسم الشركة مطلوب'),
   crNumber: z.string().trim().min(1, 'رقم السجل التجاري مطلوب'),
   vatNumber: z.string().trim().optional().or(z.literal('')),
@@ -41,38 +41,33 @@ export async function submitCreditApplication(
   }
 
   const data = validation.data;
-  const creditLimit = data.creditLimit ? Number(data.creditLimit) : null;
-  const paymentTerms = data.paymentTerms ? Number(data.paymentTerms) : null;
+  const creditLimit = data.creditLimit !== '' ? Number(data.creditLimit) : null;
+  const paymentTerms = data.paymentTerms !== '' ? Number(data.paymentTerms) : null;
 
   try {
-    let createdCompany = null;
-    if (data.companyId) {
-      createdCompany = await prisma.company.findUnique({ where: { id: data.companyId } });
-      if (createdCompany && data.token && createdCompany.applyToken && createdCompany.applyToken !== data.token) {
-        return { success: false, message: 'رابط التقديم غير صالح.' };
-      }
-    }
-    if (!createdCompany) {
-      const existing = await prisma.company.findFirst({ where: { name: data.companyName } });
-      createdCompany = existing ?? (await prisma.company.create({ data: { name: data.companyName } }));
+    const company = await prisma.company.findUnique({ where: { id: data.companyId } });
+    if (!company || !company.applyToken || company.applyToken !== data.token) {
+      return { success: false, message: 'رابط التقديم غير صالح.' };
     }
 
-    await prisma.creditApplication.create({
+    const application = await prisma.creditApplication.create({
       data: {
-        companyId: createdCompany.id,
+        companyId: company.id,
         companyName: data.companyName,
         crNumber: data.crNumber,
         vatNumber: data.vatNumber || null,
         nationalAddress: data.nationalAddress || null,
-        creditLimit: creditLimit ? creditLimit : null,
-        paymentTerms: paymentTerms ? paymentTerms : null,
+        creditLimit,
+        paymentTerms,
         bankName: data.bankName || null,
         iban: data.iban || null,
         signatureImage: data.signature,
       },
     });
 
-    revalidatePath('/');
+    revalidatePath('/admin');
+    revalidatePath(`/admin/company/${company.id}`);
+    revalidatePath(`/admin/application/${application.id}`);
 
     return {
       success: true,

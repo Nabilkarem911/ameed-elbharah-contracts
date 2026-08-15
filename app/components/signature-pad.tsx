@@ -19,9 +19,12 @@ export function SignaturePad({ value, onChange }: SignaturePadProps) {
   };
 
   const handleEndStroke = () => {
-    const dataUrl = signatureRef.current?.toDataURL('image/png') ?? '';
-    setIsEmpty(!dataUrl);
-    onChange(dataUrl);
+    const canvas = signatureRef.current;
+    if (!canvas) return;
+
+    const empty = (canvas as any).isEmpty();
+    setIsEmpty(empty);
+    onChange(empty ? '' : canvas.toDataURL('image/png'));
   };
 
   return (

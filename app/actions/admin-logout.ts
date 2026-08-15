@@ -1,8 +1,9 @@
 'use server';
 
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export async function adminLogout() {
   cookies().delete('ameed_admin_auth');
-  return { success: true };
+  redirect('/admin/login');
 }

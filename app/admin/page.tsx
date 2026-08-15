@@ -84,7 +84,7 @@ export default async function AdminIndex({ searchParams }: Props) {
           <ul className="mt-2 list-disc pr-5 text-sm">
             <li>ابدأ خدمة PostgreSQL عبر Docker Compose: <code>docker compose up -d db</code></li>
             <li>أو تأكد من تشغيل PostgreSQL محلياً وتحقق من قيمة <code>DATABASE_URL</code> في ملف <code>.env</code>.</li>
-            <li>لتطبيق التغييرات في Prisma: <code>npx prisma migrate dev --name add-apply-token</code></li>
+            <li>لتطبيق التغييرات في Prisma: <code>npx prisma migrate deploy</code></li>
           </ul>
         </div>
         <p className="mt-3 text-xs text-slate-500">تفاصيل الخطأ (للمطور): {String(err?.message ?? err)}</p>

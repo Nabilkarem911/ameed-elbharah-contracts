@@ -13,9 +13,17 @@ export function middleware(req: NextRequest) {
 
   // Protect admin routes
   if (pathname.startsWith('/admin')) {
-    if (pathname === '/admin/login') return NextResponse.next();
-
     const hasAuth = req.cookies.get('ameed_admin_auth')?.value;
+
+    // Logged-in users don't need the login page
+    if (pathname === '/admin/login') {
+      if (hasAuth) {
+        return NextResponse.redirect(new URL('/admin', req.url));
+      }
+      return NextResponse.next();
+    }
+
+    // All other admin routes require auth
     if (!hasAuth) {
       const loginUrl = new URL('/admin/login', req.url);
       return NextResponse.redirect(loginUrl);
