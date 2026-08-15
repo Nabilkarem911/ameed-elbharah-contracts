@@ -40,7 +40,8 @@ cp .env.example .env
 
 ```env
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/ameed_credit?schema=public"
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
+APP_URL="http://localhost:3000"
+# NEXT_PUBLIC_APP_URL="http://localhost:3000"  # build-time client fallback
 ADMIN_USERNAME="admin"
 ADMIN_PASSWORD="changeme"
 ```
@@ -103,6 +104,7 @@ npx prisma migrate deploy && npm run start
 
 ```env
 DATABASE_URL=postgresql://postgres:postgres@db:5432/ameed_credit?schema=public
+APP_URL=https://your-domain.com
 NEXT_PUBLIC_APP_URL=https://your-domain.com
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=your-strong-password
@@ -124,7 +126,8 @@ docker compose up --build -d
 ## متغيرات البيئة المهمة
 
 - `DATABASE_URL`: رابط اتصال PostgreSQL
-- `NEXT_PUBLIC_APP_URL`: رابط التطبيق العام (مثال: `https://contracts.example.com`)
+- `APP_URL`: رابط التطبيق العام المستخدم لتوليد روابط العملاء (مثال: `https://contracts.example.com`)
+- `NEXT_PUBLIC_APP_URL`: رابط التطبيق للاستخدام في الـ client-side (يتم تثبيته وقت الـ build)
 - `ADMIN_USERNAME`: اسم المستخدم للوحة الإدارة
 - `ADMIN_PASSWORD`: كلمة المرور للوحة الإدارة
 
@@ -132,7 +135,9 @@ docker compose up --build -d
 
 - غيّر كلمة المرور الافتراضية `changeme` قبل الإطلاق.
 - استخدم HTTPS في الإنتاج.
-- استخدم `NEXT_PUBLIC_APP_URL` بشكل صحيح حتى تعمل الروابط المرسلة للعميل بشكل صحيح.
+- استخدم `APP_URL` لتوليد الروابط المرسلة للعميل، لأنه يُقرأ أثناء الـ runtime ويمكن تغييره بدون إعادة build.
+- `NEXT_PUBLIC_APP_URL` مخصص للـ client-side ويتم تثبيت قيمته أثناء الـ build، لذلك لا تعتمد عليه في الـ server actions.
+- مع Docker Compose تأكد من وجود ملف `.env` في نفس المجلد، وقد تم ربطه بالخدمة عبر `env_file`.
 - إذا أردت، يمكن لاحقًا إضافة:
   - إرسال الرابط تلقائيًا عبر البريد/واتساب
   - صفحة حالة الطلب للعميل

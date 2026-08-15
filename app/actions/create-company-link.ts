@@ -22,7 +22,10 @@ export async function createCompanyLink(_prevState: any, formData: FormData | Re
     company = await prisma.company.update({ where: { id: company.id }, data: { applyToken: randomUUID() } });
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const baseUrl =
+    process.env.APP_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    'http://localhost:3000';
   const url = `${baseUrl}/apply/${company.id}?token=${company.applyToken}`;
 
   return { success: true, url, company };
